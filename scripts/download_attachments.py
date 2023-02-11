@@ -4,12 +4,12 @@ import imaplib
 import os
 import json
 
-INPUT_DIRECTORY = os.path.split(os.getcwd())[0] + "\\audio_files\\"
+INPUT_DIRECTORY = os.path.split(os.getcwd())[0] + "/audio_files/"
 SENDERS_TO_DOWNLOAD = ['lee.daniel.394@gmail.com']
 
 pattern_uid = re.compile(r'\d+ \(UID (?P<uid>\d+)\)')
 
-login_info = json.load(open("C:\\Users\\DanielLee\\PycharmProjects\\Transcription_Service\\login_details.json"))
+login_info = json.load(open("/root/Login_details.json"))
 SERVER = 'imap.gmail.com'
 SERVER_PORT = 993
 USER = 'aiaudiotranscription'
