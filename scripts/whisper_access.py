@@ -18,5 +18,4 @@ def transcribe_file(input_file, output_file):
     }
     response = requests.post(API_URL, headers=HEADER, files={'file': open(input_file, 'rb')}, data=data)
     output = response.json()['text']
-    print(output)
     open(output_file, 'w').write(output)

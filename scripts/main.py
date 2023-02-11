@@ -4,8 +4,8 @@ import download_attachments
 import os
 
 
-INPUT_DIRECTORY = os.path.split(os.getcwd())[0] + "/audio_files/"
-OUTPUT_DIRECTORY = os.path.split(os.getcwd())[0] + "/transcripts/"
+INPUT_DIRECTORY = "/root/audio-transcripts/audio_files/"
+OUTPUT_DIRECTORY = "/root/audio-transcripts/transcripts/"
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
     for file_name, sender in files_and_senders:
         input_file = INPUT_DIRECTORY + file_name
         output_file = OUTPUT_DIRECTORY + input_file.split("/")[-1] + ".txt"
-        whisper_access.transcribe_file(input_file, output_file, pipe=pipe)
+        whisper_access.transcribe_file(input_file, output_file)
         if sender:
             send_email.send_attachment_to_address(output_file, sender, file_name, server=server)
 
