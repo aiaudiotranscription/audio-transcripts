@@ -4,7 +4,7 @@ import imaplib
 import os
 import json
 
-SENDERS_TO_DOWNLOAD = ['lee.daniel.394@gmail.com']
+SENDERS_TO_DOWNLOAD = open("/root/audio-transcripts/scripts/authorised_emails.txt", "r").read().split('\n') 
 
 pattern_uid = re.compile(r'\d+ \(UID (?P<uid>\d+)\)')
 
@@ -19,10 +19,10 @@ def parse_uid(data):
     return match.group('uid')
 
 
-def move_email(imap, email_id):
+def move_email(imap, email_id, folder):
     typ, data = imap.fetch(email_id, '(UID)')
     msg_uid = parse_uid(data[0].decode())
-    result = imap.uid('COPY', msg_uid, 'Inbox_Archive')
+    result = imap.uid('COPY', msg_uid, folder)
     if result[0] == 'OK':
         _, _ = imap.uid('STORE', msg_uid, '+FLAGS', '(\\Deleted)')
         imap.expunge()
@@ -37,13 +37,15 @@ def download_attachments(target_directory):
     file_names_and_senders = []
     for email_id in mail_list:
         typ, data = imap.fetch(email_id, '(RFC822)')
-        move_email(imap, email_id)
         raw_email = data[0][1].decode('utf-8')
         email_message = email.message_from_string(raw_email)
         sender = email_message['From'].split('<')[1][:-1]
-        if sender not in SENDERS_TO_DOWNLOAD:
-            continue
         print(f"Email received from: {email_message['From']}")
+        if sender in SENDERS_TO_DOWNLOAD:
+            move_email(imap, email_id, 'Inbox_Archive')
+        else:
+            move_email(imap, email_id, 'Unauthorised_Emails')
+            continue
         if email_message['Subject'].lower() != 'reply':  # now only using this to reply to
             sender = None
         for part in email_message.walk():
@@ -60,6 +62,7 @@ def download_attachments(target_directory):
                 file.close()
                 print(f"Attachment saved to: {file_path}")
                 file_names_and_senders.append((file_name, sender))
+        print("Emails searched")
     return file_names_and_senders
 
 
